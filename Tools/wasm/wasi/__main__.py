@@ -304,10 +304,11 @@ def clean_contents(context):
 
 def main():
     default_host_runner = (f"{WASMTIME_HOST_RUNNER_VAR} run "
+                        "-Sinherit-network "
                         # Make sure the stack size will work for a pydebug
                         # build.
                         # Use 16 MiB stack.
-                        "--wasm max-wasm-stack=16777216 "
+                        "--wasm max-wasm-stack=33554432 "
                         # Enable thread support; causes use of preview1.
                         #"--wasm threads=y --wasi threads=y "
                         # Map the checkout to / to load the stdlib from /Lib.
