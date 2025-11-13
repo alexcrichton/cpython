@@ -3628,6 +3628,7 @@ class ConfigDictTest(BaseTest):
         handler = logging.getLogger('mymodule').handlers[0]
         self.assertEqual(handler.flushLevel, logging.ERROR)
 
+    @threading_helper.requires_working_threading()
     def setup_via_listener(self, text, verify=None):
         text = text.encode("utf-8")
         # Ask for a randomly assigned port (by using port 0)

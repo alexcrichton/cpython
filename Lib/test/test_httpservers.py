@@ -111,6 +111,7 @@ class BaseTestCase(unittest.TestCase):
     # Optional tuple (certfile, keyfile, password) to use for HTTPS servers.
     tls = None
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self._threads = threading_helper.threading_setup()
         os.environ = os_helper.EnvironmentVarGuard()

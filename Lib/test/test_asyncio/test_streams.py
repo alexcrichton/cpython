@@ -14,7 +14,7 @@ except ImportError:
 
 import asyncio
 from test.test_asyncio import utils as test_utils
-from test.support import socket_helper
+from test.support import socket_helper, threading_helper
 
 
 def tearDownModule():
@@ -885,6 +885,7 @@ class StreamTests(test_utils.TestCase):
 
         self.loop.run_until_complete(main())
 
+    @threading_helper.requires_working_threading()
     def test_drain_raises(self):
         # See http://bugs.python.org/issue25441
 
@@ -1159,6 +1160,7 @@ class StreamTests(test_utils.TestCase):
 
         self.assertEqual(messages, [])
 
+    @threading_helper.requires_working_threading()
     def _basetest_unhandled_exceptions(self, handle_echo):
         port = socket_helper.find_unused_port()
 
@@ -1197,6 +1199,7 @@ class StreamTests(test_utils.TestCase):
         messages = self._basetest_unhandled_exceptions(handle_echo)
         self.assertEqual(messages, [])
 
+    @threading_helper.requires_working_threading()
     def test_open_connection_happy_eyeball_refcycles(self):
         port = socket_helper.find_unused_port()
         async def main():

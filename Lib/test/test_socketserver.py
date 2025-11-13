@@ -108,6 +108,7 @@ class SocketServerTest(unittest.TestCase):
         return server
 
     @threading_helper.reap_threads
+    @threading_helper.requires_working_threading()
     def run_server(self, svrcls, hdlrbase, testfunc):
         server = self.make_server(self.pickaddr(svrcls.address_family),
                                   svrcls, hdlrbase)
@@ -237,6 +238,7 @@ class SocketServerTest(unittest.TestCase):
                         self.dgram_examine)
 
     @threading_helper.reap_threads
+    @threading_helper.requires_working_threading()
     def test_shutdown(self):
         # Issue #2302: shutdown() should always succeed in making an
         # other thread leave serve_forever().
@@ -262,6 +264,7 @@ class SocketServerTest(unittest.TestCase):
             t.join()
             s.server_close()
 
+    @threading_helper.requires_working_threading()
     def test_close_immediately(self):
         class MyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
             pass
@@ -359,6 +362,7 @@ class BadHandler(socketserver.BaseRequestHandler):
 
 class ThreadingErrorTestServer(socketserver.ThreadingMixIn,
         BaseErrorTestServer):
+    @threading_helper.requires_working_threading()
     def __init__(self, *pos, **kw):
         self.done = threading.Event()
         super().__init__(*pos, **kw)
@@ -486,6 +490,7 @@ class MiscTestCase(unittest.TestCase):
         self.assertEqual(server.shutdown_called, 1)
         server.server_close()
 
+    @threading_helper.requires_working_threading()
     def test_threads_reaped(self):
         """
         In #37193, users reported a memory leak

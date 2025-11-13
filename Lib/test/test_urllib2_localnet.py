@@ -285,6 +285,7 @@ class BasicAuthTests(unittest.TestCase):
     INCORRECT_PASSWD = "Incorrect"
     REALM = "Test"
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         super(BasicAuthTests, self).setUp()
         # With Basic Authentication
@@ -329,6 +330,7 @@ class ProxyAuthTests(unittest.TestCase):
     PASSWD = "test123"
     REALM = "TestRealm"
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         super(ProxyAuthTests, self).setUp()
         # Ignore proxy bypass settings in the environment.
@@ -482,6 +484,7 @@ class TestUrlopen(unittest.TestCase):
         self.server.stop()
         self.server = None
 
+    @threading_helper.requires_working_threading()
     def start_server(self, responses=None):
         if responses is None:
             responses = [(200, [], b"we don't care")]

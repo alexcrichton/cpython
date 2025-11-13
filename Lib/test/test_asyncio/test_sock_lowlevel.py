@@ -9,6 +9,7 @@ from unittest.mock import Mock
 from test.test_asyncio import utils as test_utils
 from test import support
 from test.support import socket_helper
+from test.support import threading_helper
 
 if socket_helper.tcp_blackhole():
     raise unittest.SkipTest('Not relevant to ProactorEventLoop')
@@ -448,6 +449,7 @@ class BaseSockTestsMixin:
             self.assertEqual(received_data, data)
             self.assertEqual(from_addr, server_address)
 
+    @threading_helper.requires_working_threading()
     def test_sendto_blocking(self):
         if sys.platform == 'win32':
             if isinstance(self.loop, asyncio.ProactorEventLoop):

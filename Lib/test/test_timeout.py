@@ -242,9 +242,14 @@ class TCPTimeoutTestCase(TimeoutTestCase):
             socket_helper.bind_port(serv, self.localhost)
             serv.listen()
             self.sock.connect(serv.getsockname())
-            # The address argument is ignored since we already connected.
-            self._sock_operation(100, 1.5, 'sendto', b"X" * 200000,
-                                 serv.getsockname())
+            # The address argument may either be ignored since we already
+            # connected or the `EISCONN` error may be returned.
+            try:
+                self._sock_operation(100, 1.5, 'sendto', b"X" * 200000,
+                                     serv.getsockname())
+            except OSError as e:
+                if e.errno != errno.EISCONN:
+                    raise
 
     def testSendall(self):
         # Test sendall() timeout

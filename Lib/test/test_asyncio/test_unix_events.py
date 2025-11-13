@@ -55,7 +55,7 @@ def close_pipe_transport(transport):
     transport._pipe = None
 
 
-@unittest.skipUnless(signal, 'Signals are not supported')
+@unittest.skipUnless(hasattr(signal, 'valid_signals'), 'Signals are not supported')
 class SelectorEventLoopSignalTests(test_utils.TestCase):
 
     def setUp(self):

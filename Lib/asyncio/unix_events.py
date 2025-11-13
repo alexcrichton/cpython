@@ -183,7 +183,7 @@ class _UnixSelectorEventLoop(selector_events.BaseSelectorEventLoop):
         if not isinstance(sig, int):
             raise TypeError(f'sig must be an int, not {sig!r}')
 
-        if sig not in signal.valid_signals():
+        if not hasattr(signal, 'valid_signals') or sig not in signal.valid_signals():
             raise ValueError(f'invalid signal number {sig}')
 
     def _make_read_pipe_transport(self, pipe, protocol, waiter=None,

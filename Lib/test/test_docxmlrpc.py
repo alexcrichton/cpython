@@ -5,6 +5,7 @@ import sys
 import threading
 import unittest
 from test import support
+from test.support import threading_helper
 
 support.requires_working_socket(module=True)
 
@@ -68,6 +69,7 @@ def make_server():
         raise
 
 class DocXMLRPCHTTPGETServer(unittest.TestCase):
+    @threading_helper.requires_working_threading()
     def setUp(self):
         # Enable server feedback
         DocXMLRPCServer._send_traceback_header = True

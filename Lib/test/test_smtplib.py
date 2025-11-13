@@ -231,6 +231,7 @@ class DebuggingServerTests(unittest.TestCase):
 
     maxDiff = None
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self.thread_key = threading_helper.threading_setup()
         self.real_getfqdn = socket.getfqdn
@@ -773,6 +774,7 @@ class BadHELOServerTests(unittest.TestCase):
 class TooLongLineTests(unittest.TestCase):
     respdata = b'250 OK' + (b'.' * smtplib._MAXLINE * 2) + b'\n'
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self.thread_key = threading_helper.threading_setup()
         self.old_stdout = sys.stdout
@@ -1034,6 +1036,7 @@ class SimSMTPServer(smtpd.SMTPServer):
 # (i.e., something with more features than DebuggingServer)
 class SMTPSimTests(unittest.TestCase):
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self.thread_key = threading_helper.threading_setup()
         self.real_getfqdn = socket.getfqdn
@@ -1430,6 +1433,7 @@ class SMTPUTF8SimTests(unittest.TestCase):
 
     maxDiff = None
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self.thread_key = threading_helper.threading_setup()
         self.real_getfqdn = socket.getfqdn
@@ -1559,6 +1563,7 @@ class SimSMTPAUTHInitialResponseServer(SimSMTPServer):
 
 
 class SMTPAUTHInitialResponseSimTests(unittest.TestCase):
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self.thread_key = threading_helper.threading_setup()
         self.real_getfqdn = socket.getfqdn

@@ -19,6 +19,7 @@ from test import support
 from test.support.script_helper import assert_python_ok
 from test.support import os_helper
 from test.support import socket_helper
+from test.support import threading_helper
 import warnings
 
 MOCK_ANY = mock.ANY
@@ -236,6 +237,7 @@ class BaseEventLoopTests(test_utils.TestCase):
 
         self.assertIsNone(self.loop._default_executor)
 
+    @threading_helper.requires_working_threading()
     def test_shutdown_default_executor_timeout(self):
         event = threading.Event()
 
@@ -331,6 +333,7 @@ class BaseEventLoopTests(test_utils.TestCase):
             loop.call_later(60, cb)
             loop.call_at(loop.time() + 60, cb)
 
+    @threading_helper.requires_working_threading()
     def test_check_thread(self):
         def check_in_thread(loop, event, debug, create_loop, fut):
             # wait until the event loop is running
@@ -1034,6 +1037,7 @@ class BaseEventLoopTests(test_utils.TestCase):
             test_utils.run_briefly(self.loop)
             self.assertTrue(status['finalized'])
 
+    @threading_helper.requires_working_threading()
     def test_asyncgen_finalization_by_gc_in_other_thread(self):
         # Python issue 34769: If garbage collector runs in another
         # thread, async generators will not finalize in debug
@@ -1128,6 +1132,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         self.set_event_loop(self.loop)
 
     @mock.patch('socket.getnameinfo')
+    @threading_helper.requires_working_threading()
     def test_getnameinfo(self, m_gai):
         m_gai.side_effect = lambda *args: 42
         r = self.loop.run_until_complete(self.loop.getnameinfo(('abc', 123)))
@@ -1422,6 +1427,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         for e in cm.exception.exceptions:
             self.assertIsInstance(e, OSError)
 
+    @threading_helper.requires_working_threading()
     def _test_create_connection_ip_addr(self, m_socket, allow_inet_pton):
         # Test the fallback code, even if this system has inet_pton.
         if not allow_inet_pton:
@@ -1499,6 +1505,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         support.is_android and platform.android_ver().api_level < 23,
         "Issue gh-71123: this fails on Android before API level 23"
     )
+    @threading_helper.requires_working_threading()
     def test_create_connection_service_name(self, m_socket):
         m_socket.getaddrinfo = socket.getaddrinfo
         sock = m_socket.socket.return_value
@@ -1546,6 +1553,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
             OSError, self.loop.run_until_complete, coro)
 
     @patch_socket
+    @threading_helper.requires_working_threading()
     def test_create_connection_bluetooth(self, m_socket):
         # See http://bugs.python.org/issue27136, fallback to getaddrinfo when
         # we can't recognize an address is resolved, e.g. a Bluetooth address.
@@ -1741,6 +1749,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         self.assertTrue(m_sock.close.called)
 
     @patch_socket
+    @threading_helper.requires_working_threading()
     def test_create_datagram_endpoint_no_addrinfo(self, m_socket):
         m_socket.getaddrinfo.return_value = []
 
@@ -1768,6 +1777,8 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         self.assertRaises(
             OSError, self.loop.run_until_complete, coro)
 
+    @unittest.skipIf(sys.platform == 'wasi',
+                    "SO_BROADCAST does not work on WASI")
     def test_create_datagram_endpoint_allow_broadcast(self):
         protocol = MyDatagramProto(create_future=True, loop=self.loop)
         self.loop.sock_connect = sock_connect = mock.Mock()
@@ -1909,6 +1920,8 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
 
     @unittest.skipIf(sys.platform == 'vxworks',
                     "SO_BROADCAST is enabled by default on VxWorks")
+    @unittest.skipIf(sys.platform == 'wasi',
+                    "SO_BROADCAST is not present on WASI")
     def test_create_datagram_endpoint_sockopts(self):
         # Socket options should not be applied unless asked for.
         # SO_REUSEPORT is not available on all platforms.
@@ -2142,6 +2155,7 @@ class BaseLoopSockSendfileTests(test_utils.TestCase):
         self.addCleanup(sock.close)
         return sock
 
+    @threading_helper.requires_working_threading()
     def run_loop(self, coro):
         return self.loop.run_until_complete(coro)
 

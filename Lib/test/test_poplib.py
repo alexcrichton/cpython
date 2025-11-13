@@ -220,6 +220,7 @@ class DummyPOP3Server(asyncore.dispatcher, threading.Thread):
         self.host, self.port = self.socket.getsockname()[:2]
         self.handler_instance = None
 
+    @threading_helper.requires_working_threading()
     def start(self):
         assert not self.active
         self.__flag = threading.Event()
@@ -507,6 +508,7 @@ class TestPOP3_TLSClass(TestPOP3Class):
 
 class TestTimeouts(TestCase):
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self.evt = threading.Event()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

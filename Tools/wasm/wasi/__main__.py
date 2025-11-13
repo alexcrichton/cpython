@@ -304,7 +304,8 @@ def clean_contents(context):
 
 def main():
     default_host_runner = (f"{WASMTIME_HOST_RUNNER_VAR} run "
-                        "-Sinherit-network "
+                        "--wasi inherit-network "
+                        "--wasi allow-ip-name-lookup "
                         # Make sure the stack size will work for a pydebug
                         # build.
                         # Use 16 MiB stack.

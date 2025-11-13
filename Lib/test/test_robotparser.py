@@ -314,6 +314,7 @@ class RobotHandler(BaseHTTPRequestHandler):
 )
 class PasswordProtectedSiteTestCase(unittest.TestCase):
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         # clear _opener global variable
         self.addCleanup(urllib.request.urlcleanup)

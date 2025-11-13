@@ -8,6 +8,7 @@ import socket
 import tempfile
 import threading
 from test import support
+from test.support import threading_helper
 
 
 class FunctionalTestCaseMixin:
@@ -161,6 +162,7 @@ class SocketThread(threading.Thread):
         self._active = False
         self.join()
 
+    @threading_helper.requires_working_threading()
     def __enter__(self):
         self.start()
         return self

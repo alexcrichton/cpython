@@ -409,6 +409,7 @@ class ThreadableTest:
         dependent upon the client thread during its setup routine."""
         self.server_ready.set()
 
+    @threading_helper.requires_working_threading()
     def _setUp(self):
         self.enterContext(threading_helper.wait_threads_exit())
 
@@ -1015,6 +1016,7 @@ class GeneralModuleTests(unittest.TestCase):
             s.sendto(b'foo', 0, sockname, 4)
         self.assertIn('(4 given)', str(cm.exception))
 
+    @unittest.skipIf(sys.platform == "wasi", "WASI is missing RAW/RDM/SEQPACKET")
     def testCrucialConstants(self):
         # Testing for mission critical constants
         socket.AF_INET
@@ -1106,6 +1108,7 @@ class GeneralModuleTests(unittest.TestCase):
         if not fqhn in all_host_names:
             self.fail("Error testing host resolution mechanisms. (fqdn: %s, all: %s)" % (fqhn, repr(all_host_names)))
 
+    @unittest.skipIf(sys.platform == 'wasi', "not implemented on WASI yet")
     def test_host_resolution(self):
         for addr in [socket_helper.HOSTv4, '10.0.0.1', '255.255.255.255']:
             self.assertEqual(socket.gethostbyname(addr), addr)
@@ -1686,7 +1689,7 @@ class GeneralModuleTests(unittest.TestCase):
         # Issue #6697.
         self.assertRaises(UnicodeEncodeError, socket.getaddrinfo, 'localhost', '\uD800')
 
-        if hasattr(socket, 'AI_NUMERICSERV'):
+        if hasattr(socket, 'AI_NUMERICSERV') and sys.platform != 'wasi':
             self.assertRaises(socket.gaierror, socket.getaddrinfo, "localhost", "http",
                               flags=socket.AI_NUMERICSERV)
 
@@ -1763,7 +1766,8 @@ class GeneralModuleTests(unittest.TestCase):
         # these should all be successful
         domain = 'испытание.pythontest.net'
         socket.gethostbyname(domain)
-        socket.gethostbyname_ex(domain)
+        if sys.platform != 'wasi':
+            socket.gethostbyname_ex(domain)
         socket.getaddrinfo(domain,0,socket.AF_UNSPEC,socket.SOCK_STREAM)
         # this may not work if the forward lookup chooses the IPv6 address, as that doesn't
         # have a reverse entry yet
@@ -1883,10 +1887,12 @@ class GeneralModuleTests(unittest.TestCase):
             self.assertEqual(type, socket.SOCK_STREAM)
 
     def test_listen_backlog(self):
-        for backlog in 0, -1:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as srv:
-                srv.bind((HOST, 0))
-                srv.listen(backlog)
+        if sys.platform != 'wasi':
+            for backlog in 0, -1:
+                print(backlog)
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as srv:
+                    srv.bind((HOST, 0))
+                    srv.listen(backlog)
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as srv:
             srv.bind((HOST, 0))
@@ -6448,6 +6454,7 @@ class ContextManagersTest(ThreadedTCPSocketTest):
         self.assertRaises(OSError, sock.sendall, b'foo')
 
 
+@unittest.skipIf(sys.platform == 'wasi', "WASI cannot disable CLOEXEC")
 class InheritanceTest(unittest.TestCase):
     @unittest.skipUnless(hasattr(socket, "SOCK_CLOEXEC"),
                          "SOCK_CLOEXEC not defined")
@@ -6518,6 +6525,7 @@ class InheritanceTest(unittest.TestCase):
 @unittest.skipUnless(hasattr(socket, "SOCK_NONBLOCK"),
                      "SOCK_NONBLOCK not defined")
 class NonblockConstantTest(unittest.TestCase):
+    @unittest.skipIf(fcntl is None, "need fcntl")
     def checkNonblock(self, s, nonblock=True, timeout=0.0):
         if nonblock:
             self.assertEqual(s.type, socket.SOCK_STREAM)
@@ -7167,6 +7175,7 @@ class TestMacOSTCPFlags(unittest.TestCase):
         self.assertTrue(socket.TCP_KEEPALIVE)
 
 @unittest.skipUnless(hasattr(socket, 'TCP_QUICKACK'), 'need socket.TCP_QUICKACK')
+@unittest.skipIf(sys.platform == 'wasi', "WASI does not support QUICKACK")
 class TestQuickackFlag(unittest.TestCase):
     def check_set_quickack(self, sock):
         # quickack already true by default on some OS distributions
@@ -7268,6 +7277,7 @@ class CreateServerTest(unittest.TestCase):
 class CreateServerFunctionalTest(unittest.TestCase):
     timeout = support.LOOPBACK_TIMEOUT
 
+    @threading_helper.requires_working_threading()
     def echo_server(self, sock):
         def run(sock):
             with sock:
@@ -7373,6 +7383,7 @@ class SendRecvFdsTests(unittest.TestCase):
 
 class FreeThreadingTests(unittest.TestCase):
 
+    @threading_helper.requires_working_threading()
     def test_close_detach_race(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

@@ -320,6 +320,7 @@ class XMLRPCTestCase(unittest.TestCase):
         except OSError:
             self.assertTrue(has_ssl)
 
+    @threading_helper.requires_working_threading()
     def test_keepalive_disconnect(self):
         class RequestHandler(http.server.BaseHTTPRequestHandler):
             protocol_version = "HTTP/1.1"
@@ -783,6 +784,7 @@ class BaseServerTestCase(unittest.TestCase):
     request_count = 1
     threadFunc = staticmethod(http_server)
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         # enable traceback reporting
         xmlrpc.server.SimpleXMLRPCServer._send_traceback_header = True
@@ -1340,6 +1342,7 @@ class FailingMessageClass(http.client.HTTPMessage):
 
 
 class FailingServerTestCase(unittest.TestCase):
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self.evt = threading.Event()
         # start server thread to handle requests

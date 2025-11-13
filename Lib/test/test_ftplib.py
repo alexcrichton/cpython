@@ -492,6 +492,7 @@ if ssl is not None:
 
 class TestFTPClass(TestCase):
 
+    @threading_helper.requires_working_threading()
     def setUp(self, encoding=DEFAULT_ENCODING):
         self.server = DummyFTPServer((HOST, 0), encoding=encoding)
         self.server.start()
@@ -1046,6 +1047,7 @@ class TestTLS_FTPClass(TestCase):
 
 class TestTimeouts(TestCase):
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         self.evt = threading.Event()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

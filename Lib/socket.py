@@ -637,6 +637,13 @@ def _fallback_socketpair(family=AF_INET, type=SOCK_STREAM, proto=0):
     finally:
         lsock.close()
 
+    # WASI platforms don't allow calling `getpeername` on a socket that's in the
+    # "connecting" state (which is done via the nonblocking connect above)
+    # meaning that this following test can't happen reliably, so short circuit
+    # it for now.
+    if sys.platform == 'wasi':
+        return (ssock, csock)
+
     # Authenticating avoids using a connection from something else
     # able to connect to {host}:{port} instead of us.
     # We expect only AF_INET and AF_INET6 families.

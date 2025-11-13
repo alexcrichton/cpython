@@ -162,6 +162,7 @@ class SSLWSGIServer(SSLWSGIServerMixin, SilentWSGIServer):
     pass
 
 
+@threading_helper.requires_working_threading()
 def _run_test_server(*, address, use_ssl=False, server_cls, server_ssl_cls):
 
     def loop(environ):
@@ -279,6 +280,7 @@ def echo_datagrams(sock):
 
 
 @contextlib.contextmanager
+@threading_helper.requires_working_threading()
 def run_udp_echo_server(*, host='127.0.0.1', port=0):
     addr_info = socket.getaddrinfo(host, port, type=socket.SOCK_DGRAM)
     family, type, proto, _, sockaddr = addr_info[0]
@@ -527,6 +529,7 @@ def get_function_source(func):
 
 class TestCase(unittest.TestCase):
     @staticmethod
+    @threading_helper.requires_working_threading()
     def close_loop(loop):
         if loop._default_executor is not None:
             if not loop.is_closed():

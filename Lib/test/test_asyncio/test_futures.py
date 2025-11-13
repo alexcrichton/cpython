@@ -14,6 +14,7 @@ from asyncio import futures
 import warnings
 from test.test_asyncio import utils as test_utils
 from test import support
+from test.support import threading_helper
 
 
 def tearDownModule():
@@ -526,6 +527,7 @@ class BaseFutureTests:
         del fut
         self.assertFalse(m_log.error.called)
 
+    @threading_helper.requires_working_threading()
     def test_wrap_future(self):
 
         def run(arg):
@@ -544,6 +546,7 @@ class BaseFutureTests:
         f2 = asyncio.wrap_future(f1)
         self.assertIs(f1, f2)
 
+    @threading_helper.requires_working_threading()
     def test_wrap_future_without_loop(self):
         def run(arg):
             return (arg, threading.get_ident())
@@ -553,6 +556,7 @@ class BaseFutureTests:
             asyncio.wrap_future(f1)
         ex.shutdown(wait=True)
 
+    @threading_helper.requires_working_threading()
     def test_wrap_future_use_running_loop(self):
         def run(arg):
             return (arg, threading.get_ident())
@@ -564,6 +568,7 @@ class BaseFutureTests:
         self.assertIs(self.loop, f2._loop)
         ex.shutdown(wait=True)
 
+    @threading_helper.requires_working_threading()
     def test_wrap_future_use_global_loop(self):
         # Deprecated in 3.10, undeprecated in 3.12
         asyncio.set_event_loop(self.loop)

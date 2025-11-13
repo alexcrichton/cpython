@@ -23,6 +23,7 @@ except ImportError:
     ssl = None
 
 support.requires_working_socket(module=True)
+threading_helper.requires_working_threading(module=True)
 
 CERTFILE = os.path.join(os.path.dirname(__file__) or os.curdir, "certdata", "keycert3.pem")
 CAFILE = os.path.join(os.path.dirname(__file__) or os.curdir, "certdata", "pycacert.pem")

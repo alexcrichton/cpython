@@ -30,6 +30,7 @@ def find_ready_matching(ready, flag):
 
 class PollTests(unittest.TestCase):
 
+    @unittest.skipUnless(hasattr(os, "pipe"), "requires os.pipe()")
     def test_poll1(self):
         # Basic functional test of poll object
         # Create a bunch of pipe and test that poll works with them.
@@ -79,6 +80,7 @@ class PollTests(unittest.TestCase):
 
         self.assertEqual(bufs, [MSG] * NUM_PIPES)
 
+    @unittest.skipUnless(hasattr(os, "pipe"), "requires os.pipe()")
     def test_poll_unit_tests(self):
         # returns NVAL for invalid file descriptor
         FD, w = os.pipe()
@@ -185,6 +187,7 @@ class PollTests(unittest.TestCase):
         self.assertRaises(OverflowError, pollster.poll, INT_MAX + 1)
         self.assertRaises(OverflowError, pollster.poll, UINT_MAX + 1)
 
+    @unittest.skipUnless(hasattr(os, "pipe"), "requires os.pipe()")
     @threading_helper.reap_threads
     def test_threaded_poll(self):
         r, w = os.pipe()
@@ -214,6 +217,7 @@ class PollTests(unittest.TestCase):
             t.join()
 
     @unittest.skipUnless(threading, 'Threading required for this test.')
+    @unittest.skipUnless(hasattr(os, "pipe"), "requires os.pipe()")
     @threading_helper.reap_threads
     def test_poll_blocks_with_negative_ms(self):
         for timeout_ms in [None, -1000, -1, -1.0, -0.1, -1e-100]:

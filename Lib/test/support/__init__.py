@@ -11,6 +11,7 @@ import logging
 import _opcode
 import os
 import re
+import socket
 import stat
 import sys
 import sysconfig
@@ -625,10 +626,14 @@ def requires_subprocess():
     """Used for subprocess, os.spawn calls, fd inheritance"""
     return unittest.skipUnless(has_subprocess_support, "requires subprocess support")
 
-# Emscripten's socket emulation and WASI sockets have limitations.
+# Emscripten's socket emulation has limitations, so disable it.
+# WASIp1 had very limited support for sockets (e.g. no `connect`), but
+# WASIp2+ has full support for sockets. Test for this by seeing if `connect`
+# is present, and if so assume all sockets work on WASI, otherwise assume
+# nothing works.
 has_socket_support = not (
     is_emscripten
-    or is_wasi
+    or (is_wasi and not hasattr(socket.socket, 'connect'))
 )
 
 def requires_working_socket(*, module=False):

@@ -13,6 +13,7 @@ from unittest import mock
 from test import support
 from test.support import os_helper
 from test.support import socket_helper
+from test.support import threading_helper
 from test.test_asyncio import utils as test_utils
 
 try:
@@ -130,6 +131,7 @@ class SendfileBase:
         support.gc_collect()
         super().tearDown()
 
+    @threading_helper.requires_working_threading()
     def run_loop(self, coro):
         return self.loop.run_until_complete(coro)
 

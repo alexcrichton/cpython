@@ -19,9 +19,9 @@ from asyncio import futures
 from asyncio import tasks
 from test.test_asyncio import utils as test_utils
 from test import support
+from test.support import threading_helper
 from test.support.script_helper import assert_python_ok
 from test.support.warnings_helper import ignore_warnings
-
 
 def tearDownModule():
     asyncio.events._set_event_loop_policy(None)
@@ -3586,6 +3586,7 @@ class CoroutineGatherTests(GatherTestsBase, test_utils.TestCase):
 class RunCoroutineThreadsafeTests(test_utils.TestCase):
     """Test case for asyncio.run_coroutine_threadsafe."""
 
+    @threading_helper.requires_working_threading()
     def setUp(self):
         super().setUp()
         self.loop = asyncio.new_event_loop()

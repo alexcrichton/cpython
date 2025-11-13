@@ -5,7 +5,9 @@ import unittest
 
 from contextvars import ContextVar
 from unittest import mock
+from test.support import threading_helper
 
+threading_helper.requires_working_threading(module=True)
 
 def tearDownModule():
     asyncio.events._set_event_loop_policy(None)

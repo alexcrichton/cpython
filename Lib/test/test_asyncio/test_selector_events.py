@@ -7,6 +7,7 @@ import sys
 import unittest
 from asyncio import selector_events
 from unittest import mock
+from test.support import threading_helper
 
 try:
     import ssl
@@ -160,6 +161,7 @@ class BaseSelectorEventLoopTests(test_utils.TestCase):
         self.assertRaises(RuntimeError, self.loop._write_to_self)
 
     @mock.patch('socket.getaddrinfo')
+    @threading_helper.requires_working_threading()
     def test_sock_connect_resolve_using_socket_params(self, m_gai):
         addr = ('need-resolution.com', 8080)
         for sock_type in [socket.SOCK_STREAM, socket.SOCK_DGRAM]:

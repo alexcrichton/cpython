@@ -16,6 +16,7 @@ TestCase = unittest.TestCase
 from test import support
 from test.support import os_helper
 from test.support import socket_helper
+from test.support import threading_helper
 
 support.requires_working_socket(module=True)
 
@@ -1428,6 +1429,7 @@ class BasicTest(TestCase):
         self.assertEqual(sock.file.read(), extradata) #we read to the end
         resp.close()
 
+    @threading_helper.requires_working_threading()
     def test_response_fileno(self):
         # Make sure fd returned by fileno is valid.
         serv = socket.create_server((HOST, 0))

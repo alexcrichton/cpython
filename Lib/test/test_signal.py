@@ -272,6 +272,7 @@ class WakeupFDTests(unittest.TestCase):
         self.assertEqual(signal.set_wakeup_fd(-1), -1)
 
     @unittest.skipUnless(support.has_socket_support, "needs working sockets.")
+    @unittest.skipIf(sys.platform == "wasi", "WASI has no signals")
     def test_set_wakeup_fd_socket_result(self):
         sock1 = socket.socket()
         self.addCleanup(sock1.close)
